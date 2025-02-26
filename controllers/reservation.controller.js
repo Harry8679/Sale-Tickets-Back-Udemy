@@ -1,5 +1,5 @@
-const Reservation = require('../models/reservationModel');
-const Event = require('../models/eventModel');
+const Reservation = require('../models/reservation.model');
+const Event = require('../models/event.model');
 
 exports.createReservation = async (req, res) => {
   const { eventId, quantity } = req.body;
