@@ -1,22 +1,27 @@
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
 
-dotenv.config();
-connectDB();
+const userRoutes = require('./routes/user.route');
+const eventRoutes = require('./routes/event.route');
+const reservationRoutes = require('./routes/reservation.route');
 
 const app = express();
 
+// 🛡️ Middlewares
 app.use(express.json());
 app.use(cors());
 
-app.use('/api/users', require('./routes/userRoutes'));
-app.use('/api/events', require('./routes/eventRoutes'));
-app.use('/api/reservations', require('./routes/reservationRoutes'));
+// 📌 Routes
+app.use('/api/users', userRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/reservations', reservationRoutes);
 
 const PORT = process.env.PORT || 5700;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+mongoose.connect(process.env.MONGO_URI, {})
+  .then(() => {
+    console.log('🟢 MongoDB connecté');
+    app.listen(PORT, () => console.log(`🚀 Serveur lancé sur http://localhost:${PORT}`));
+  })
+  .catch(err => console.error('🔴 Erreur MongoDB:', err));
