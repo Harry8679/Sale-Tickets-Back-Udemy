@@ -23,7 +23,16 @@ exports.createReservation = async (req, res) => {
   }
 };
 
+// exports.getUserReservations = async (req, res) => {
+//   const reservations = await Reservation.find({ user: req.user.id }).populate('event');
+//   res.json(reservations);
+// };
+
 exports.getUserReservations = async (req, res) => {
-  const reservations = await Reservation.find({ user: req.user.id }).populate('event');
-  res.json(reservations);
+  try {
+    const reservations = await Reservation.find({ user: req.user.id }).populate("event");
+    res.json(reservations);
+  } catch (error) {
+    res.status(500).json({ error: "Erreur lors de la récupération des réservations." });
+  }
 };
