@@ -6,6 +6,7 @@ const cors = require('cors');
 const userRoutes = require('./routes/user.route');
 const eventRoutes = require('./routes/event.route');
 const reservationRoutes = require('./routes/reservation.route');
+const checkoutRoutes = require("./routes/checkout.route");
 
 const app = express();
 
