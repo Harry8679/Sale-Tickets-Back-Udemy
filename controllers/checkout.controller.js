@@ -3,10 +3,16 @@ const Event = require("../models/event.model");
 const Reservation = require("../models/reservation.model");
 
 exports.createCheckoutSession = async (req, res) => {
+  console.log("STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
   try {
-    const { eventId, quantity } = req.body;
-    const event = await Event.findById(eventId);
+    console.log("Données reçues:", req.body);
 
+    const { eventId, quantity } = req.body;
+    if (!eventId || !quantity) {
+      return res.status(400).json({ error: "eventId et quantity sont requis" });
+    }
+
+    const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ error: "Événement introuvable" });
     }
@@ -24,7 +30,7 @@ exports.createCheckoutSession = async (req, res) => {
             product_data: {
               name: event.name,
             },
-            unit_amount: event.price * 100,
+            unit_amount: Math.round(event.price * 100),
           },
           quantity: quantity,
         },
@@ -34,9 +40,11 @@ exports.createCheckoutSession = async (req, res) => {
       cancel_url: `http://localhost:3000/profile?canceled=true`,
     });
 
+    console.log("Session Stripe créée:", session.url);
     res.json({ url: session.url });
+
   } catch (error) {
-    console.error(error);
+    console.error("Erreur Stripe:", error);
     res.status(500).json({ error: "Erreur lors de la création de la session Stripe" });
   }
 };
