@@ -7,6 +7,7 @@ const userRoutes = require('./routes/user.route');
 const eventRoutes = require('./routes/event.route');
 const reservationRoutes = require('./routes/reservation.route');
 const checkoutRoutes = require("./routes/checkout.route");
+const webhookRoutes = require("./routes/webhook.route");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use("/api/checkout", checkoutRoutes);
+app.use("/api/webhook/stripe", webhookRoutes);
 
 const PORT = process.env.PORT || 5700;
 mongoose.connect(process.env.MONGO_URI, {})
