@@ -18,6 +18,7 @@ app.use(cors());
 app.use('/api/users', userRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/reservations', reservationRoutes);
+app.use("/api/checkout", checkoutRoutes);
 
 const PORT = process.env.PORT || 5700;
 mongoose.connect(process.env.MONGO_URI, {})
