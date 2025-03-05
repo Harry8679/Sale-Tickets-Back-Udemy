@@ -4,6 +4,10 @@ const Reservation = require("../models/reservation.model");
 const User = require("../models/user.model");
 
 exports.handleStripeWebhook = async (req, res) => {
+  console.log("🚀 Webhook Stripe reçu !");
+  console.log("🧐 Headers:", req.headers);
+  console.log("🧐 Body brut:", req.body.toString());
+  
   const sig = req.headers["stripe-signature"];
   let event;
 
