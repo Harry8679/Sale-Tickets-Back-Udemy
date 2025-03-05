@@ -42,7 +42,7 @@ exports.handleStripeWebhook = async (req, res) => {
 
     try {
       console.log("🔄 Tentative d'enregistrement de la réservation...");
-      
+
       // ✅ Recherche de l'événement et de l'utilisateur
       const event = await Event.findById(eventId);
       const user = await User.findById(userId);
@@ -57,12 +57,15 @@ exports.handleStripeWebhook = async (req, res) => {
         return res.status(404).json({ error: "Utilisateur introuvable" });
       }
 
-      // ✅ Création de la réservation
+      console.log("✅ Utilisateur et événement trouvés ! Création de la réservation...");
+
+      // ✅ Création de la réservation avec le bon format
       const reservation = new Reservation({
         user: userId,
         event: eventId,
-        ticketsBought: quantity,
+        tickets: quantity, // Correction ici pour correspondre au modèle
         totalPrice: event.price * quantity,
+        status: "confirmed", // Mettre la réservation comme confirmée après paiement
       });
 
       await reservation.save();
