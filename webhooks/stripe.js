@@ -4,15 +4,14 @@ const Reservation = require("../models/reservation.model");
 const User = require("../models/user.model");
 
 exports.handleStripeWebhook = async (req, res) => {
-  console.log("🚀 Webhook Stripe reçu !");
-  console.log("🧐 Headers:", req.headers);
-  console.log("🧐 Body brut:", req.body.toString());
-  
   const sig = req.headers["stripe-signature"];
   let event;
 
   try {
-    console.log("🔵 Réception d'un webhook Stripe...");
+    console.log("🚀 Webhook Stripe reçu !");
+    console.log("🧐 Headers:", req.headers);
+    console.log("🧐 Body brut:", req.body.toString()); // Affiche la requête brute Stripe
+
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error("❌ Erreur Webhook Signature :", err.message);
@@ -26,15 +25,16 @@ exports.handleStripeWebhook = async (req, res) => {
 
     console.log("🎟️ Données de la session :", session);
 
+    // Vérification des metadata (eventId, userId, quantity)
     const eventId = session.metadata?.eventId;
     const userId = session.metadata?.userId;
     const quantity = parseInt(session.metadata?.quantity, 10);
 
     console.log(`🟢 Event ID: ${eventId}, User ID: ${userId}, Quantity: ${quantity}`);
 
-    if (!eventId || !userId || !quantity) {
-      console.error("❌ Données manquantes dans la session !");
-      return res.status(400).json({ error: "Données de session Stripe manquantes" });
+    if (!eventId || !userId || isNaN(quantity)) {
+      console.error("❌ Données manquantes ou invalides dans la session !");
+      return res.status(400).json({ error: "Données de session Stripe manquantes ou invalides" });
     }
 
     try {
@@ -62,10 +62,9 @@ exports.handleStripeWebhook = async (req, res) => {
 
       await reservation.save();
       console.log("✅ Réservation créée avec succès !");
-      
+
       event.availableTickets -= quantity;
       await event.save();
-      
       console.log("✅ Nombre de tickets mis à jour !");
     } catch (err) {
       console.error("❌ Erreur lors de la création de la réservation :", err);
