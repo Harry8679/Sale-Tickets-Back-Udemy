@@ -34,18 +34,21 @@ exports.handleStripeWebhook = async (req, res) => {
     }
 
     try {
+      console.log("🔍 Recherche de l'événement...");
       const event = await Event.findById(eventId);
       if (!event) {
         console.error("❌ Événement introuvable !");
         return res.status(404).json({ error: "Événement introuvable" });
       }
 
+      console.log("🔍 Recherche de l'utilisateur...");
       const user = await User.findById(userId);
       if (!user) {
         console.error("❌ Utilisateur introuvable !");
         return res.status(404).json({ error: "Utilisateur introuvable" });
       }
 
+      console.log("🟢 Création de la réservation...");
       const reservation = new Reservation({
         user: userId,
         event: eventId,
@@ -55,11 +58,14 @@ exports.handleStripeWebhook = async (req, res) => {
 
       await reservation.save();
       console.log("✅ Réservation créée avec succès !");
-
+      
       event.availableTickets -= quantity;
       await event.save();
+      
+      console.log("✅ Nombre de tickets mis à jour !");
     } catch (err) {
       console.error("❌ Erreur lors de la création de la réservation :", err);
+      return res.status(500).json({ error: "Erreur lors de la création de la réservation" });
     }
   }
 
