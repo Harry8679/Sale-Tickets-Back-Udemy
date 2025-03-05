@@ -12,6 +12,11 @@ exports.handleStripeWebhook = async (req, res) => {
     console.log("🧐 Headers:", req.headers);
     console.log("🧐 Body brut:", req.body.toString()); // Affiche la requête brute Stripe
 
+    console.log("🔍 Vérification des données avant création de la réservation :");
+console.log("Event ID:", eventId);
+console.log("User ID:", userId);
+console.log("Quantity:", quantity);
+
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error("❌ Erreur Webhook Signature :", err.message);
