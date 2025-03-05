@@ -28,11 +28,28 @@ exports.createReservation = async (req, res) => {
 //   res.json(reservations);
 // };
 
+// exports.getUserReservations = async (req, res) => {
+//   try {
+//     const reservations = await Reservation.find({ user: req.user.id }).populate("event");
+//     res.json(reservations);
+//   } catch (error) {
+//     res.status(500).json({ error: "Erreur lors de la récupération des réservations." });
+//   }
+// };
 exports.getUserReservations = async (req, res) => {
   try {
+    console.log("🔍 Récupération des réservations pour l'utilisateur :", req.user.id);
     const reservations = await Reservation.find({ user: req.user.id }).populate("event");
+    
+    if (!reservations.length) {
+      console.log("⚠️ Aucune réservation trouvée.");
+    } else {
+      console.log("✅ Réservations trouvées :", reservations);
+    }
+    
     res.json(reservations);
   } catch (error) {
+    console.error("❌ Erreur lors de la récupération des réservations :", error);
     res.status(500).json({ error: "Erreur lors de la récupération des réservations." });
   }
 };
